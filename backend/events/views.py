@@ -1,7 +1,7 @@
 from rest_framework import status, viewsets
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 from backend.paginator import CustomPagination
@@ -42,7 +42,7 @@ class EventViewSet(viewsets.ModelViewSet[Event]):
     permission_classes = [
         IsAuthenticated,
     ]
-    
+
     def list(self, request: Request) -> Response:
         serializer = self.get_serializer(self.queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -58,15 +58,13 @@ class EventViewSet(viewsets.ModelViewSet[Event]):
         if event:
             serializer = self.get_serializer(event)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
         return Response({"error": "Event not found"}, status.HTTP_404_NOT_FOUND)
 
     def update(self, request: Request, pk: str | None = None) -> Response:
         event = self.queryset.filter(id=pk).first()
         if event is None:
-            return Response(
-                {"error": "Event not found"}, status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Event not found"}, status.HTTP_404_NOT_FOUND)
 
         if request.user != event.created_by:
             return Response(
@@ -82,9 +80,7 @@ class EventViewSet(viewsets.ModelViewSet[Event]):
     def partial_update(self, request: Request, pk: str | None = None) -> Response:
         event = self.queryset.filter(id=pk).first()
         if event is None:
-            return Response(
-                {"error": "Event not found"}, status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Event not found"}, status.HTTP_404_NOT_FOUND)
 
         if request.user != event.created_by:
             return Response(
@@ -101,9 +97,7 @@ class EventViewSet(viewsets.ModelViewSet[Event]):
         event = self.queryset.filter(id=pk).first()
         print(pk, event)
         if event is None:
-            return Response(
-                {"error": "Event not found"}, status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Event not found"}, status.HTTP_404_NOT_FOUND)
 
         if request.user != event.created_by:
             return Response(
@@ -112,10 +106,8 @@ class EventViewSet(viewsets.ModelViewSet[Event]):
             )
 
         event.delete()
-        
-        return Response(
-            {"message": "Event deleted successfully"}, status.HTTP_200_OK
-        )
+
+        return Response({"message": "Event deleted successfully"}, status.HTTP_200_OK)
 
 
 class FormatViewSet(viewsets.ModelViewSet[Format]):
