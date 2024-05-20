@@ -44,7 +44,8 @@ class EventViewSet(viewsets.ModelViewSet[Event]):
     ]
 
     def list(self, request: Request) -> Response:
-        serializer = self.get_serializer(self.queryset, many=True)
+        public_queryset = Event.objects.filter(is_private=False)
+        serializer = self.get_serializer(public_queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request: Request) -> Response:
