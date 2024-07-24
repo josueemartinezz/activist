@@ -1,10 +1,10 @@
 <template>
-  <HeaderWebsite class="md:hidden" />
+  <HeaderWebsite v-if="!aboveMediumBP" />
   <div class="grid h-screen grid-cols-1 md:grid-cols-2">
     <Head>
       <Title>{{ $t(page.title) }}</Title>
     </Head>
-    <div class="relative hidden md:block">
+    <div v-if="aboveMediumBP" class="relative">
       <div class="flex h-full w-full items-center justify-center">
         <div
           class="relative z-0 mb-6 h-16 w-64 overflow-y-hidden xl:h-24 xl:w-96"
@@ -18,7 +18,7 @@
     <div
       class="h-full bg-light-layer-1 text-light-text dark:bg-dark-layer-1 dark:text-dark-text"
     >
-      <div class="hidden justify-end space-x-6 px-8 py-4 md:flex">
+      <div v-if="aboveMediumBP" class="flex justify-end space-x-6 px-8 py-4">
         <DropdownLanguage />
         <BtnRouteInternal
           v-if="page.route != 'index'"
@@ -44,29 +44,58 @@
 
 <script setup lang="ts">
 const route = useRoute();
+import useBreakpoint from "~/composables/useBreakpoint";
+
+const aboveMediumBP = useBreakpoint("md");
 
 const page = computed(() => {
-  const isSignIn = route.fullPath?.includes("sign-in");
-  const isSignUp = route.fullPath?.includes("sign-up");
-  return {
-    route: isSignIn ? "sign-in" : isSignUp ? "sign-up" : "index",
-    btnAriaLabel: isSignIn
-      ? "_global.auth.sign-up-aria-label"
-      : isSignUp
-        ? "_global.auth.sign-in-aria-label"
-        : "",
-    btnLabel: isSignIn ? "_global.sign-up" : isSignUp ? "_global.sign-in" : "",
-    btnLink: isSignIn ? "/auth/sign-up" : isSignUp ? "/auth/sign-in" : "",
-    message: isSignIn
-      ? "layouts.auth.sign-in-welcome-back"
-      : isSignUp
-        ? "layouts.auth.sign-up-first-time-welcome"
-        : "layouts.auth.welcome",
-    title: isSignIn
-      ? "_global.sign-in"
-      : isSignUp
-        ? "_global.sign-up"
-        : "pages.auth.index.auth",
+  const authRoutes = [
+    {
+      route: "sign-in",
+      btnAriaLabel: "_global.auth.sign-up-aria-label",
+      btnLabel: "_global.sign-up",
+      btnLink: "/auth/sign-up",
+      message: "layouts.auth.sign-in-welcome-back",
+      title: "_global.sign-in",
+    },
+    {
+      route: "sign-up",
+      btnAriaLabel: "_global.auth.sign-in-aria-label",
+      btnLabel: "_global.sign-in",
+      btnLink: "/auth/sign-in",
+      message: "layouts.auth.sign-up-first-time-welcome",
+      title: "_global.sign-up",
+    },
+    {
+      route: "reset-password",
+      btnAriaLabel: "_global.auth.sign-in-aria-label",
+      btnLabel: "_global.sign-in",
+      btnLink: "/auth/sign-in",
+      message: "layouts.auth.reset-password-forgot-password",
+      title: "_global.reset-password",
+    },
+    {
+      route: "set-password",
+      btnAriaLabel: "_global.auth.sign-in-aria-label",
+      btnLabel: "_global.sign-in",
+      btnLink: "/auth/sign-in",
+      message: "layouts.auth.set-password-set-new-password",
+      title: "_global.set-new-password",
+    },
+  ];
+
+  const defaultRoute = {
+    route: "index",
+    btnAriaLabel: "",
+    btnLabel: "",
+    btnLink: "",
+    message: "layouts.auth.welcome",
+    title: "pages.auth.index.auth",
   };
+
+  return (
+    authRoutes.find((authRoute) => route.fullPath?.includes(authRoute.route)) ||
+    defaultRoute
+  );
 });
 </script>

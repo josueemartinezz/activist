@@ -19,9 +19,6 @@ from .factories import (
     FormatFactory,
     RoleFactory,
 )
-from authentication.factories import (
-    UserModel,
-)
 
 
 class EventsThrottleTest(BaseTestThrottle):

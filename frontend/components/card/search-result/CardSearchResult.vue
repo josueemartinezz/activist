@@ -159,25 +159,31 @@
               :user="user"
             />
           </div>
-          <div class="hidden items-center space-x-3 md:flex lg:space-x-5">
+          <div
+            v-if="aboveMediumBP"
+            class="flex items-center space-x-3 lg:space-x-5"
+          >
             <MetaTagLocation v-if="location" :location="location" />
             <MetaTagVideo
               v-if="onlineLocation"
               :link="onlineLocation"
               label="components.meta-tag-video.view-video"
             />
-            <MetaTagDate :date="date" />
+            <MetaTagDate v-if="event && event.id != ''" :date="date" />
           </div>
         </div>
         <div class="flex flex-col space-y-3 md:flex-row md:space-y-0">
-          <div class="flex items-center justify-center space-x-4 md:hidden">
+          <div
+            v-if="!aboveMediumBP"
+            class="flex items-center justify-center space-x-4"
+          >
             <MetaTagLocation v-if="location" :location="location" />
             <MetaTagVideo
               v-if="onlineLocation"
               :link="onlineLocation"
               label="components.meta-tag-video.view-video"
             />
-            <MetaTagDate :date="date" />
+            <MetaTagDate v-if="event && event.id != ''" :date="date" />
           </div>
           <div
             class="flex justify-center space-x-3 md:justify-start lg:space-x-4"
@@ -215,13 +221,14 @@
 </template>
 
 <script setup lang="ts">
+import useBreakpoint from "~/composables/useBreakpoint";
 import { useLinkURL } from "~/composables/useLinkURL";
-import type { Event } from "~/types/event";
-import type { Group } from "~/types/group";
+import type { User } from "~/types/auth/user";
+import type { Resource } from "~/types/content/resource";
+import type { Group } from "~/types/entities/group";
+import type { Organization } from "~/types/entities/organization";
+import type { Event } from "~/types/events/event";
 import { IconMap } from "~/types/icon-map";
-import type { Organization } from "~/types/organization";
-import type { Resource } from "~/types/resource";
-import type { User } from "~/types/user";
 
 const props = defineProps<{
   organization?: Organization;
@@ -232,6 +239,8 @@ const props = defineProps<{
   isReduced?: boolean;
   isPrivate?: boolean;
 }>();
+
+const aboveMediumBP = useBreakpoint("md");
 
 const i18n = useI18n();
 const localePath = useLocalePath();
